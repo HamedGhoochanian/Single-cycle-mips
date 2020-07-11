@@ -1,29 +1,20 @@
-module ALU(input [31:0] data1,data2,input [3:0] aluoperation,output reg [31:0] result,output reg zero,lt,gt);
+module ALU(input [31:0] data1,data2,input [2:0] aluoperation,output reg [31:0] result,output reg zero,lt,gt);
 
   always@(aluoperation,data1,data2)
   begin
     case (aluoperation)
-      4'b0000 : result = data1 + data2; // ADD
-      4'b0001 : result = data1 - data2; // SUB
-      4'b0010 : result = data1 & data2; // AND
-      4'b0011 : result = data1 | data2; // OR
-      4'b0101 : result = data1 < data2; // SLT
+      3'b000 : result = data1 + data2; // ADD
+      3'b001 : result = data1 - data2; // SUB
+      3'b010 : result = data1 & data2; // AND
+      3'b011 : result = data1 | data2; // OR
+      3'b100 : result = (data1 > data2) ? 32'd1 : 32'd0;
       default : result = data1 + data2; // ADD
     endcase
     
-    if(data1>data2)
-      begin
-       gt = 1'b1;
-       lt = 1'b0; 
-      end else if(data1<data2)
-      begin
-       gt = 1'b0;
-       lt = 1'b1;  
-      end
-      
-    if (result==32'd0) zero=1'b1;
-    else zero=1'b0;
-     
+
+    gt = (data1>data2) ? 1'b1 : 1'b0;
+    lt = (data1>data2) ? 1'b0 : 1'b1; 
+    zero = (result==32'd0) ? 1'b1 : 1'b0;      
   end
   
 
@@ -32,7 +23,7 @@ endmodule
 module testbench;
   
   reg [31:0] d1,d2;  /* d1=data1, d2=data2 */
-  reg [3:0] aluop;   /* aluop=aluoperation */
+  reg [2:0] aluop;   /* aluop=aluoperation */
   
   wire [31:0] r; /* r=result */
   wire gt,lt,z; /* z=zero */
