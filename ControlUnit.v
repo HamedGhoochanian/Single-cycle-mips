@@ -1,14 +1,36 @@
 module ControlUnit(
 	input [5:0] opcode, funct,
-    output reg [3:0] ALUOp,
-    output reg
-		RegWrite, RegDst
-		MemRead, MemWrite, MemToReg
-		Branch, Jump,
-        ALUSrc,
+    output reg RegWrite, 
+        RegDst,
+		MemRead, 
+        MemWrite, 
+        MemToReg,
+		Branch, 
+        Jump,
+        ALUSrc
 );
+
+    always @(opcode) 
+    begin
+        case(opcode)
+            6'b000000: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b10001000; //R type
+            6'b001000: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b10101000; //ADDI
+            6'b001100: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b10101000; //ANDI
+            6'b001101: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b10101000; //ORI
+            6'b001010: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b10101000; //SLTI
+            6'b100011: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'b00111100; //LW
+            6'b101011: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx01x0010; //SW 
+            6'b000100: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx00x0001; //BEQ
+            6'b000101: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx00x0001; //BNE
+            6'b000010: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx1xx0x0x; //J
+
+        endcase
+    end
 	
-	always @(opcode, funct) begin
+endmodule
+
+//* mammad
+/* always @(opcode, funct) begin
 		// Reset every signal
 		RegWrite = 1'b1;
 		RegDst = 1'b0;
@@ -16,7 +38,7 @@ module ControlUnit(
 		MemWrite = 1'b0;
 		Branch = 1'b0;
         Jump = 1'b0;
-        ALUOp = 1'b0;
+        ALUop = 1'b0;
         ALUSrc = 1'b0;
         MemToReg = 1'b0;
 
@@ -26,14 +48,14 @@ module ControlUnit(
             (opcode == 6'b001000)
         )
             begin // add, addi
-            ALUOp = 4'b0000;
+            ALUop = 4'b0000;
         end
         
         if(
             (opcode == 6'b000000 && funct == 6'b101011)
             || opcode == 6'b000100 || opcode == 6'b000101)
             begin // sub
-            ALUOp = 4'b0001;
+            ALUop = 4'b0001;
         end
 
         if(
@@ -42,7 +64,7 @@ module ControlUnit(
             (opcode == 6'b001110)
         )
             begin // or, ori
-            ALUOp = 4'b0011;
+            ALUop = 4'b0011;
         end
 
         if(
@@ -51,7 +73,7 @@ module ControlUnit(
             (opcode == 6'b001100)
         )
             begin // and, andi
-            ALUOp = 4'b0010;
+            ALUop = 4'b0010;
         end
 
         if(
@@ -60,7 +82,7 @@ module ControlUnit(
             (opcode == 6'b001110)
         )
             begin // xor, xori
-            ALUOp = 4'b0100;
+            ALUop = 4'b0100;
         end
 
         if(
@@ -69,7 +91,7 @@ module ControlUnit(
             (opcode == 6'b001010)
         )
             begin // slt, slti
-            ALUOp = 4'b0101;
+            ALUop = 4'b0101;
         end
 
         if(opcode == 6'b000000) begin
@@ -107,5 +129,4 @@ module ControlUnit(
             MemRead = 1'b1;
             MemToReg = 1'b1;
         end
-    end
-endmodule;
+    end */

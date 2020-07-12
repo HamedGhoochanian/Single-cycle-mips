@@ -1,19 +1,25 @@
-module ALUcontrol(ALU_control, ALUop, func);
-    input [1:0] ALUop;
-    input [3:0] ALU_control;
+//* takes instruction code and func and return a ALU code
+
+module ALUcontrol(ALU_control, inst, funct);
+    input [5:0] inst;
+    input [5:0] funct;
     output reg [2:0] ALU_control;
-    wire [5:0] concated;
-    assign concated = {ALUop, func};
+    wire [7:0] concated;
+    assign concated = {inst, funct};
     always @(concated)
     casex (concated)  
-        6'b11xxxx: ALU_control=3'b000;  
-        6'b10xxxx: ALU_control=3'b100;  
-        6'b01xxxx: ALU_control=3'b001;  
-        6'b000000: ALU_control=3'b000;  
-        6'b000001: ALU_control=3'b001;  
-        6'b000010: ALU_control=3'b010;  
-        6'b000011: ALU_control=3'b011;  
-        6'b000100: ALU_control=3'b100;  
+        12'b000000100000: ALU_control=3'b010;  //add
+        12'b000000100010: ALU_control=3'b110;  //sub
+        12'b000000100100: ALU_control=3'b000;  //and
+        12'b000000100101: ALU_control=3'b001;  //or
+        12'b000000101010: ALU_control=3'b111;  //slt
+        12'b001000xxxxxx: ALU_control=3'b010;  //addi
+        12'b001000xxxxxx: ALU_control=3'b010;  //addi
+        12'b001101xxxxxx: ALU_control=3'b001;  //ori
+        12'b001010xxxxxx: ALU_control=3'b111;  //slti
+        12'b001100xxxxxx: ALU_control=3'b000;  //andi
+        12'b000100xxxxxx: ALU_control=3'b101;  //beq
+        12'b000101xxxxxx: ALU_control=3'b011;  //bne 
         default: ALU_control=3'b000;  
     endcase
 endmodule
