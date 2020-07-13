@@ -7,8 +7,7 @@ module ControlUnit(
         MemToReg,
 		Branch, 
         Jump,
-        ALUSrc
-);
+        ALUSrc);
 
     always @(opcode) 
     begin
@@ -23,7 +22,6 @@ module ControlUnit(
             6'b000100: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx00x0001; //BEQ
             6'b000101: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx00x0001; //BNE
             6'b000010: {RegDst, Jump, ALUSrc, MemToReg, RegWrite, MemRead, MemWrite, Branch} = 10'bx1xx0x0x; //J
-
         endcase
     end
 	

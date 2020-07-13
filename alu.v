@@ -27,9 +27,9 @@ module testbench;
   reg [2:0] aluop;   /* aluop=aluoperation */
   
   wire [31:0] r; /* r=result */
-  wire gt,lt,z; /* z=zero */
+  wire gt,lt,z,branch; /* z=zero */
   
-  ALU u0(d1, d2, aluop, r, z, lt, gt);
+  ALU u0(d1, d2, aluop, r, z, lt, gt, branch);
   
   initial begin
     

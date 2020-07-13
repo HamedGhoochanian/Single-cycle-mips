@@ -1,11 +1,11 @@
 //* takes instruction code and func and return a ALU code
 
-module ALUcontrol(ALU_control, inst, funct);
-    input [5:0] inst;
+module ALUcontrol(opCode, funct, ALU_control);
+    input [5:0] opCode;
     input [5:0] funct;
     output reg [2:0] ALU_control;
     wire [7:0] concated;
-    assign concated = {inst, funct};
+    assign concated = {opCode, funct};
     always @(concated)
     casex (concated)  
         12'b000000100000: ALU_control=3'b010;  //add

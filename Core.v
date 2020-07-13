@@ -1,5 +1,127 @@
+`include "alu.v"
+`include "ControlUnit.v"
+`include "Data-Memory.v"
+`include "regfile.v"
+`include "parser.v"
+`include "Inst-Memory.v"
+`include "ALU-control.v"
+
+
+
 module Core(input clk);
-    wire reg_write_sig, reg_dst_sig,
+	reg[31:0] PC = 32'b0;
+    wire instmem_signal = 1'b0;
+	wire [31:0] instruction;
+	wire [5:0] funct;
+	wire [4:0] rs, rt, rd, shamt;
+	wire [31:0] address;
+	wire [15:0] immediate;
+	wire [5:0] opcode;
+    wire [2:0] alu_op;
+	wire regRead, 
+        memToReg, 
+        regDst,
+	    memRead, 
+        memWrite, 
+        ALUsrc,
+        lt,
+        gt, 
+        zero,
+        jump,
+        branch,
+        bCond;
+	wire [31:0] writeData, data1, data2, readData;
+
+    //* Instruction Memory
+    InstructionMemory IM(PC,instruction);
+
+    //* Parse instruction
+    instruction_parser parse(opcode,
+                            rs,
+                            rt,
+                            rd,
+                            shamt,
+                            funct,
+                            immediate,
+                            instruction);
+
+    //* Control unit
+    ControlUnit CU(opcode,
+                    funct,
+                    regWrite,
+                    regDst,
+                    memRead,
+                    memWrite,
+                    memToReg,
+                    branch,
+                    jump,
+                    ALUsrc);
+
+    //* ALU control
+    ALUcontrol AC(opcode, 
+                funct,
+                alu_op);
+
+    //* Arithmatic login unit
+    ALU alu(data1, 
+            (!ALUsrc) ? data2: {{16{immediate[15]}}, immediate},
+            alu_op,
+            writeData,
+            zero,
+            lt,
+            gt,
+            bCond);
+
+    //* Data memory
+    DataMemory DM(memRead,
+                memWrite,
+                address,
+                writeData,
+                readData);
+    
+    //* REGISTER FILE
+    RegFile RF(clk,
+                rs,
+                rt,
+                rd,
+                writeData,
+                regWrite,
+                data1,
+                data2,
+                regRead,
+                regDst);
+    reg bf,jf;
+
+
+
+    
+    always @(posedge clk)
+    begin
+        if(bCond == 1'd1 && branch == 1'b1 && bf == 1'b1) 
+        begin
+			PC = PC + 1 + $signed(immediate);
+            jf=1'b1;
+            bf=1'b0;
+        end
+        else if(opcode == 6'b000010 & jump == 1'b1)begin
+			PC = address;
+            jf = 1'b0;
+            bf = 1'b1;
+		end
+        else begin
+			PC = PC+1;
+            jf = 1'b1;
+            bf = 1'b1;
+		end
+    end
+    initial begin
+        $dumpfile("core.vcd");
+        $dumpvars(1,Core);
+    end
+endmodule
+
+//* mammad
+/* wire reg_write_sig, reg_dst_sig,
         mem_read_sig, mem_write_signal, mem_to_reg_sig,
         banch_sig, jump_sig,
         alu_src_sig;
@@ -73,6 +195,4 @@ module Core(input clk);
             PC = addr;
         else
             PC = PC + 1;
-    end
-
-endmodule
+    end */
